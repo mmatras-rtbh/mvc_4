@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "rm": "rm -rf ./dist",
-    "prod": "npm run rm && npx tsc && node --env-file=.env ./dist/index.js",
+    "prod": "npm run rm && npx tsc && node --env-file=.env ./index.js",
     "dev": "node --watch -r ts-node/register --env-file=.env ./src/index.ts",
     "lint": "eslint src/**/*.ts --fix",
     "start-local": "node --env-file=.env dist/index.js",
