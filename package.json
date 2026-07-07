@@ -10,7 +10,7 @@
     "dev": "node --watch -r ts-node/register --env-file=.env ./src/index.ts",
     "lint": "eslint src/**/*.ts --fix",
     "start-local": "node --env-file=.env dist/index.js",
-    "build": "tsc && cp -r ./public dist/",
+    "build": "tsc && cp -r ./src/public dist/",
     "start": "node dist/index.js",
     "render-build": "npm install && npm run build"
   },
