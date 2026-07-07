@@ -2,7 +2,7 @@ import { join } from 'path';
 import { Express } from 'express';
 import express from 'express';
 import session from 'express-session';
-import { injectSessionData } from './sessionData.ts';
+import { injectSessionData } from './sessionData';
 
 export function setupMiddleware(server: Express) {
   server.use(
