@@ -22,6 +22,9 @@ export class PG {
         ? {
             connectionString: connectionString,
             allowExitOnIdle: false,
+            ssl: {
+              rejectUnauthorized: false, 
+            },
           }
         : {
             ...credentials,
