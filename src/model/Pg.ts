@@ -42,6 +42,6 @@ export class PG {
   }
 
   async queryDB() {
-    return await this.client.many('SELECT * FROM table_name');
+    return await this.client.any('SELECT * FROM table_name');
   }
 }
