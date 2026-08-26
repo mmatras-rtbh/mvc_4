@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import 'multer';
 import { PhotoModel } from '../model/Photo';
 
 export const getGallery = async (req: Request, res: Response) => {
