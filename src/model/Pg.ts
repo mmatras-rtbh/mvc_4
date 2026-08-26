@@ -2,6 +2,10 @@ import { connect } from 'http2';
 import pgPromise from 'pg-promise';
 
 export class PG {
+  public get db() {
+    return this.client;
+  }
+
   private readonly client;
   static #instance: PG;
 
