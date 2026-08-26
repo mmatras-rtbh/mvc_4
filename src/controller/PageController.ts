@@ -1,4 +1,5 @@
 import { PG } from '../model/Pg';
+import { PhotoModel } from '../model/Photo';
 import { Views } from '../view/Views';
 import { Request, Response } from 'express';
 import { successHtml } from '../view/successTemplate';
