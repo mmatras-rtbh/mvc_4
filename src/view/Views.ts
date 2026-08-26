@@ -1,3 +1,5 @@
+import { Photo } from './model/Photo'; // Dostosuj ścieżkę do pliku z interfejsem/klasą Photo
+
 export class Views {
   private static pageTemplate(title: string, content: string, sessionAuthorise?: string): string {
     return `
@@ -26,6 +28,7 @@ export class Views {
               <a href="/about">About</a>
               <a href="/map">Map</a>
               <a href="/portfolio">Portfolio</a>
+              <a href="/gallery">Galeria</a>
               <a href="/contact">Contact</a>
               <a href="/style">Style</a>
               ${!sessionAuthorise ? `<a href="/login">Login</a>` : ''}
@@ -197,5 +200,222 @@ export class Views {
         }
       </script>
     `, authorise)
+  }
+
+  // ==========================================
+  // ZADANIE 5: GALERIA ZDJĘĆ
+  // ==========================================
+
+  /**
+   * Generuje wspólne menu nawigacyjne dla sekcji galerii (lewy panel)
+   */
+  static getGallerySidebar(activeCategory?: string): string {
+    const categories = [
+      { id: 'standing', label: 'Postać stojąca' },
+      { id: 'sitting', label: 'Postać siedząca' },
+      { id: 'portraits', label: 'Portrety' },
+      { id: 'interesting', label: 'Ciekawe' },
+      { id: 'perspective', label: 'Perspektywy' },
+    ];
+
+    const categoryLinks = categories
+      .map(
+        (cat) => `
+        <a href="/gallery?category=${cat.id}" class="${activeCategory === cat.id ? 'active' : ''}">
+          ${cat.label}
+        </a>
+      `
+      )
+      .join('');
+
+    return `
+      <div class="gallery-sidebar">
+        ${categoryLinks}
+        <hr />
+        <a href="/gallery/add" class="add-btn">Dodaj zdjęcie</a>
+      </div>
+    `;
+  }
+
+  /**
+   * Widok wyświetlania galerii zdjęć (dwukolumnowy układ)
+   */
+  static getGalleryPage(authorise: string, photos: Photo[], currentCategory: string = 'standing'): string {
+    const sidebarHtml = this.getGallerySidebar(currentCategory);
+
+    // Generowanie tabeli/listy ze zdjęciami z prawego panelu
+    const photosRowsHtml = photos.length > 0
+      ? photos
+          .map(
+            (photo) => `
+            <tr>
+              <td class="photo-cell">
+                <img src="/photos/${photo.galeria}/${photo.link}" alt="${photo.komentarz}" />
+              </td>
+              <td class="comment-cell">
+                ${photo.komentarz}
+              </td>
+            </tr>
+          `
+          )
+          .join('')
+      : `<tr><td colspan="2" style="text-align:center; padding: 20px;">Brak zdjęć w tej kategorii.</td></tr>`;
+
+    const content = `
+      <style>
+        .gallery-container {
+          display: flex;
+          gap: 20px;
+          margin-top: 15px;
+        }
+        .gallery-sidebar {
+          width: 200px;
+          border: 1px solid #ccc;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          background-color: #f9f9f9;
+        }
+        .gallery-sidebar a {
+          text-decoration: none;
+          color: #333;
+          padding: 6px 10px;
+          border-radius: 4px;
+        }
+        .gallery-sidebar a:hover, .gallery-sidebar a.active {
+          background-color: #e0e0e0;
+          font-weight: bold;
+        }
+        .gallery-sidebar a.add-btn {
+          color: #d9534f;
+          font-weight: bold;
+        }
+        .gallery-main {
+          flex: 1;
+        }
+        .gallery-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        .gallery-table td {
+          border: 1px solid #333;
+          padding: 10px;
+          vertical-align: middle;
+        }
+        .photo-cell {
+          width: 150px;
+          text-align: center;
+        }
+        .photo-cell img {
+          max-width: 120px;
+          max-height: 120px;
+          object-fit: contain;
+        }
+        .comment-cell {
+          font-size: 1.1em;
+        }
+      </style>
+
+      <h2>Internetowa Galeria Zdjęć</h2>
+      <div class="gallery-container">
+        <!-- Lewy panel (Menu) -->
+        ${sidebarHtml}
+
+        <!-- Prawy panel (Zdjęcia) -->
+        <div class="gallery-main">
+          <table class="gallery-table">
+            <tbody>
+              ${photosRowsHtml}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    return this.pageTemplate('Galeria Zdjęć', content, authorise);
+  }
+
+  /**
+   * Widok formularza dodawania nowego zdjęcia
+   */
+  static getAddPhotoPage(authorise: string): string {
+    const sidebarHtml = this.getGallerySidebar();
+
+    const content = `
+      <style>
+        .gallery-container {
+          display: flex;
+          gap: 20px;
+          margin-top: 15px;
+        }
+        .gallery-sidebar {
+          width: 200px;
+          border: 1px solid #ccc;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          background-color: #f9f9f9;
+        }
+        .gallery-sidebar a {
+          text-decoration: none;
+          color: #333;
+          padding: 6px 10px;
+        }
+        .upload-form {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          max-width: 400px;
+        }
+        .upload-form label {
+          font-weight: bold;
+        }
+        .upload-form input, .upload-form select, .upload-form textarea {
+          width: 100%;
+          padding: 8px;
+          box-sizing: border-box;
+        }
+      </style>
+
+      <h2>Dodaj Nowe Zdjęcie</h2>
+      <div class="gallery-container">
+        <!-- Lewy panel (Menu) -->
+        ${sidebarHtml}
+
+        <!-- Prawy panel (Formularz) -->
+        <div class="gallery-main">
+          <form action="/gallery/add" method="POST" enctype="multipart/form-data" class="upload-form">
+            <div>
+              <label for="galeria">Kategoria / Galeria:</label>
+              <select name="galeria" id="galeria" required>
+                <option value="standing">Postać stojąca</option>
+                <option value="sitting">Postać siedząca</option>
+                <option value="portraits">Portrety</option>
+                <option value="interesting">Ciekawe</option>
+                <option value="perspective">Perspektywy</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="photo">Wybierz plik ze zdjęciem:</label>
+              <input type="file" id="photo" name="photo" accept="image/*" required />
+            </div>
+
+            <div>
+              <label for="komentarz">Komentarz / Opis:</label>
+              <textarea id="komentarz" name="komentarz" rows="3" placeholder="Wpisz opis zdjęcia..."></textarea>
+            </div>
+
+            <div>
+              <input type="submit" value="Zapisz zdjęcie" style="background-color: #4CAF50; color: white; cursor: pointer; border: none; padding: 10px;" />
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    return this.pageTemplate('Dodaj zdjęcie', content, authorise);
   }
 }
