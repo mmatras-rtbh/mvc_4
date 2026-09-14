@@ -1,4 +1,4 @@
-import { Photo } from './model/Photo'; // Dostosuj ścieżkę do pliku z interfejsem/klasą Photo
+import { Photo } from '../model/Photo';
 
 export class Views {
   private static pageTemplate(title: string, content: string, sessionAuthorise?: string): string {
