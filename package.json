@@ -20,16 +20,18 @@
   "type": "commonjs",
   "dependencies": {
     "@types/express": "^5.0.3",
-    "@types/multer": "^1.4.11",
     "@types/express-session": "^1.18.2",
+    "@types/multer": "^1.4.11",
+    "ejs": "^6.0.1",
     "express": "^5.1.0",
-    "multer": "^1.4.5-lts.1",
     "express-session": "^1.19.0",
+    "multer": "^1.4.5-lts.1",
     "pg-promise": "^12.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@tsconfig/node24": "^24.0.4",
+    "@types/ejs": "^3.1.5",
     "eslint": "^9.35.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
