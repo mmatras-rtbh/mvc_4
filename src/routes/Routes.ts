@@ -1,6 +1,7 @@
 import { Express } from 'express';
 import express from 'express';
 import { PageController } from '../controller/PageController';
+import { galleryController } from '../controller/galleryController';
 // import { mainPage } from '../view/Views';
 
 export class Routes {
@@ -14,6 +15,7 @@ export class Routes {
     this.server.get(`/about`, PageController.getAboutPage());
     this.server.get(`/map`, PageController.getMapPage());
     this.server.get(`/portfolio`, PageController.getPortfolioPage());
+    this.server.get(`/portfolio`, galleryController.getGallery());
     this.server.get(`/contact`, PageController.getContactPage());
     this.server.get(`/style`, PageController.getStylePage());
     this.server.get(`/login`, PageController.getLoginPage());
