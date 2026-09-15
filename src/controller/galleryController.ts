@@ -7,7 +7,7 @@ export const getGallery = async (req: Request, res: Response) => {
   const photos = await PhotoModel.getByCategory(category);
   
   // Renderowanie widoku głównego z przekazaniem zdjęć i aktualnej kategorii
-  res.render('gallery', { photos, currentCategory: category });
+  res.render('gallery.ejs', { photos, currentCategory: category });
 };
 
 export const getAddPhotoForm = (req: Request, res: Response) => {
