@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import express from 'express';
 import { PageController } from '../controller/PageController';
-import { galleryController } from '../controller/galleryController';
+import * as galleryController from '../controller/galleryController';
 // import { mainPage } from '../view/Views';
 
 export class Routes {
