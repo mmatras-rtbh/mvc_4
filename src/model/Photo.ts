@@ -2,7 +2,7 @@ import { PG } from './Pg';
 
 // Interfejs reprezentujący strukturę rekordu w tabeli tabela1
 export interface Photo {
-  idt?: number;
+  id?: number;
   link: string;
   galeria: string;
   komentarz: string;
@@ -16,7 +16,7 @@ export class PhotoModel {
    * Pobiera wszystkie zdjęcia przypisane do danej kategorii (galerii)
    */
   static async getByCategory(category: string): Promise<Photo[]> {
-    const query = 'SELECT * FROM tabela1 WHERE galeria = $1 ORDER BY idt ASC';
+    const query = 'SELECT * FROM tabela1 WHERE galeria = $1 ORDER BY id ASC';
     
     // pg-promise: method .any() zwraca tablicę obiektów
     return await PhotoModel.pg.db.any<Photo>(query, [category]);
