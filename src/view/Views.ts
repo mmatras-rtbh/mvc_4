@@ -140,19 +140,6 @@ export class Views {
       `,
       authorise
     );
-
-    // return this.pageTemplate(
-    //   'Contact Page',
-    //   `
-    //     <div id="contact" class="content">
-    //       <h2>Contact Us</h2>
-    //       <div>
-    //         ${data ?? []}
-    //       </div>
-    //     </div>
-    //   `,
-    //   authorise
-    // )
   }
 
   static getLoginPage(): string {
@@ -195,8 +182,6 @@ export class Views {
         function permMenuColor(color) {
           menuDiv.style.backgroundColor = color;
           sessionStorage.setItem('bgColor', color);
-          // document.documentElement.style.setProperty('--bg-color', color);
-          
         }
       </script>
     `, authorise)
@@ -238,9 +223,15 @@ export class Views {
   }
 
   /**
-   * Widok wyświetlania galerii zdjęć (dwukolumnowy układ)
+   * Widok wyświetlania galerii zdjęć z obsługą stronicowania (dwukolumnowy układ)
    */
-  static getGalleryPage(authorise: string, photos: Photo[], currentCategory: string = 'standing'): string {
+  static getGalleryPage(
+    authorise: string, 
+    photos: Photo[], 
+    currentCategory: string = 'standing',
+    currentPage: number = 1,
+    totalPages: number = 1
+  ): string {
     const sidebarHtml = this.getGallerySidebar(currentCategory);
 
     // Generowanie tabeli/listy ze zdjęciami z prawego panelu
@@ -260,6 +251,30 @@ export class Views {
           )
           .join('')
       : `<tr><td colspan="2" style="text-align:center; padding: 20px;">Brak zdjęć w tej kategorii.</td></tr>`;
+
+    // Generowanie paska stronicowania (Pagination Links)
+    let paginationHtml = '';
+    if (totalPages > 1) {
+      paginationHtml += '<div class="pagination">';
+      
+      // Przycisk "Poprzednia"
+      if (currentPage > 1) {
+        paginationHtml += `<a href="/gallery?category=${currentCategory}&page=${currentPage - 1}">&laquo; Poprzednia</a>`;
+      }
+
+      // Numery stron
+      for (let i = 1; i <= totalPages; i++) {
+        const activeClass = i === currentPage ? 'class="active"' : '';
+        paginationHtml += `<a href="/gallery?category=${currentCategory}&page=${i}" ${activeClass}>${i}</a>`;
+      }
+
+      // Przycisk "Następna"
+      if (currentPage < totalPages) {
+        paginationHtml += `<a href="/gallery?category=${currentCategory}&page=${currentPage + 1}">Następna &raquo;</a>`;
+      }
+      
+      paginationHtml += '</div>';
+    }
 
     const content = `
       <style>
@@ -315,6 +330,29 @@ export class Views {
         .comment-cell {
           font-size: 1.1em;
         }
+
+        /* Style dla stronicowania */
+        .pagination {
+          display: flex;
+          gap: 8px;
+          margin-top: 15px;
+          justify-content: center;
+        }
+        .pagination a {
+          padding: 6px 12px;
+          border: 1px solid #ccc;
+          text-decoration: none;
+          color: #333;
+          border-radius: 4px;
+        }
+        .pagination a.active {
+          background-color: #007bff;
+          color: white;
+          border-color: #007bff;
+        }
+        .pagination a:hover:not(.active) {
+          background-color: #ddd;
+        }
       </style>
 
       <h2>Internetowa Galeria Zdjęć</h2>
@@ -329,6 +367,9 @@ export class Views {
               ${photosRowsHtml}
             </tbody>
           </table>
+
+          <!-- Nawigacja stronicowania -->
+          ${paginationHtml}
         </div>
       </div>
     `;

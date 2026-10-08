@@ -6,13 +6,16 @@ import { Views } from '../view/Views'; // 1. Zaimportuj klasę Views
 export const getGallery = async (req: Request, res: Response) => {
   try {
     const category = (req.query.category as string) || 'standing';
-    const photos = await PhotoModel.getByCategory(category);
+    const page = parseInt(req.query.page as string, 10) || 1;
+    const limit = 3;
+
+    const { photos, totalPages, currentPage } = await PhotoModel.getByCategoryPaginated(category, page, limit);
     
     // Jeśli używasz sesji, pobierz autora (np. req.session.user), w przeciwnym razie przekaż pusty string ''
     const authorise = (req.session as any)?.user || '';
 
     // 2. Wygeneruj HTML za pomocą metody statycznej i wyślij przez res.send()
-    const html = Views.getGalleryPage(authorise, photos, category);
+    const html = Views.getGalleryPage(authorise, photos, category, currentPage, totalPages);
     res.send(html);
   } catch (error) {
     console.error('Błąd w getGallery:', error);
