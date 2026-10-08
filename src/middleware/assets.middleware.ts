@@ -6,7 +6,7 @@ import { injectSessionData } from './sessionData';
 
 export function setupMiddleware(server: Express) {
   // 1. Serwowanie plików statycznych z folderu public w katalogu głównym
-  server.use(express.static(join(process.cwd(), 'public')));
+  server.use(express.static(join(process.cwd(), '/src/public')));
 
   // 2. Parser JSON oraz danych z formularzy (URL-encoded)
   server.use(express.json());
