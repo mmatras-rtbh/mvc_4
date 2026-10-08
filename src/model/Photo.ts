@@ -23,6 +23,39 @@ export class PhotoModel {
   }
 
   /**
+   * Pobiera porcję zdjęć dla danej kategorii z uwzględnieniem stronicowania (pagination)
+   */
+  static async getByCategoryPaginated(category: string, page: number = 1, limit: number = 3) {
+    const offset = (page - 1) * limit;
+
+    // Pobieramy ograniczoną liczbę rekordów dla konkretnej strony
+    const photosQuery = `
+      SELECT * FROM tabela1 
+      WHERE galeria = $1 
+      ORDER BY id ASC 
+      LIMIT $2 OFFSET $3
+    `;
+
+    // Pobieramy całkowitą liczbę zdjęć w tej kategorii
+    const countQuery = `
+      SELECT COUNT(*) as total FROM tabela1 WHERE galeria = $1
+    `;
+
+    const photos = await PhotoModel.pg.db.any<Photo>(photosQuery, [category, limit, offset]);
+    const countResult = await PhotoModel.pg.db.one<{ total: string }>(countQuery, [category]);
+
+    const totalItems = parseInt(countResult.total, 10);
+    const totalPages = Math.ceil(totalItems / limit) || 1;
+
+    return {
+      photos,
+      totalItems,
+      totalPages,
+      currentPage: page,
+    };
+  }
+
+  /**
    * Dodaje nowy rekord zdjęcia do bazy danych
    */
   static async addPhoto(link: string, galeria: string, komentarz: string): Promise<Photo> {
