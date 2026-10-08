@@ -7,7 +7,7 @@ export const getGallery = async (req: Request, res: Response) => {
   try {
     const category = (req.query.category as string) || 'standing';
     const page = parseInt(req.query.page as string, 10) || 1;
-    const limit = 3;
+    const limit = 1;
 
     const { photos, totalPages, currentPage } = await PhotoModel.getByCategoryPaginated(category, page, limit);
     
