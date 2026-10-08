@@ -241,7 +241,7 @@ export class Views {
             (photo) => `
             <tr>
               <td class="photo-cell">
-                <img src="public/photos/${photo.galeria}/${photo.link}" alt="${photo.komentarz}" />
+                <img src="/public/photos/${photo.galeria}/${photo.link}" alt="${photo.komentarz}" />
               </td>
               <td class="comment-cell">
                 ${photo.komentarz}
