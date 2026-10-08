@@ -5,19 +5,26 @@ import session from 'express-session';
 import { injectSessionData } from './sessionData';
 
 export function setupMiddleware(server: Express) {
+  // 1. Serwowanie plików statycznych z folderu public w katalogu głównym
+  server.use(express.static(join(process.cwd(), 'public')));
+
+  // 2. Parser JSON oraz danych z formularzy (URL-encoded)
+  server.use(express.json());
+  server.use(express.urlencoded({ extended: true }));
+
+  // 3. Obsługa sesji
   server.use(
-    express.static(join(__dirname, '../..', 'public')), // add static content for browser
-    express.json(), // parse json
-    express.urlencoded({ extended: true }), // parsing incoming request, accessing body as js object
     session({
-      secret: process.env.SESSION_SECRET ?? 'default_secret', // Needed, needed to sign cookie identifier of session
-      resave: false, // do not save session if it was not modify
-      saveUninitialized: true, // do not create session to time without modify
+      secret: process.env.SESSION_SECRET ?? 'default_secret',
+      resave: false,
+      saveUninitialized: true,
       cookie: {
-        secure: false, // TRUE for HTTPS
-        maxAge: 60 * 60 * 1000, // COOKIE LIFETIME (np. 1 godzina)
+        secure: false, // TRUE dla HTTPS
+        maxAge: 60 * 60 * 1000, // 1 godzina
       },
-    }),
-    injectSessionData,
+    })
   );
+
+  // 4. Własny middleware sesyjny
+  server.use(injectSessionData);
 }
