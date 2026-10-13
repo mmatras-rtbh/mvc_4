@@ -68,4 +68,22 @@ export class PhotoModel {
     // pg-promise: method .one() zwraca dokładnie jeden utworzony rekord dzięki RETURNING *
     return await PhotoModel.pg.db.one<Photo>(query, [link, galeria, komentarz]);
   }
+
+  /**
+   * Pobiera pojedyncze zdjęcie na podstawie ID
+   */
+  static async getById(id: number): Promise<Photo | null> {
+    const query = 'SELECT * FROM tabela1 WHERE id = $1';
+    return await PhotoModel.pg.db.oneOrNone<Photo>(query, [id]);
+  }
+
+  /**
+   * Usuwa rekord zdjęcia z bazy danych na podstawie ID
+   */
+  static async deletePhoto(id: number): Promise<void> {
+    const query = 'DELETE FROM tabela1 WHERE id = $1';
+    await PhotoModel.pg.db.none(query, [id]);
+  }
 }
+
+```
