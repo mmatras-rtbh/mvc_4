@@ -85,5 +85,3 @@ export class PhotoModel {
     await PhotoModel.pg.db.none(query, [id]);
   }
 }
-
-```
