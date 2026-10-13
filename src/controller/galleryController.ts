@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import 'multer';
+import fs from 'fs';
+import path from 'path';
 import { PhotoModel } from '../model/Photo';
 import { Views } from '../view/Views'; // 1. Zaimportuj klasę Views
 
@@ -40,4 +42,30 @@ export const postAddPhoto = async (req: Request, res: Response) => {
   }
 
   res.redirect(`/gallery?category=${galeria}`);
+};
+
+export const postDeletePhoto = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.body.id, 10);
+    const category = (req.body.category as string) || 'standing';
+
+    if (id) {
+      const photo = await PhotoModel.getById(id);
+
+      if (photo) {
+        const filePath = path.join(process.cwd(), 'public', 'photos', photo.galeria, photo.link);
+
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+
+        await PhotoModel.deletePhoto(id);
+      }
+    }
+
+    res.redirect(`/gallery?category=${category}`);
+  } catch (error) {
+    console.error('Błąd w postDeletePhoto:', error);
+    res.status(500).send('Błąd serwera podczas usuwania zdjęcia');
+  }
 };
