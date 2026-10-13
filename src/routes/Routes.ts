@@ -21,6 +21,7 @@ export class Routes {
     this.server.get(`/gallery`, galleryController.getGallery);
     this.server.get(`/gallery/add`, galleryController.getAddPhotoForm);
     this.server.post(`/gallery/add`, upload.single('photo'), galleryController.postAddPhoto);
+    this.server.post(`/gallery/delete`, galleryController.postDeletePhoto);
 
     this.server.get(`/contact`, PageController.getContactPage());
     this.server.get(`/style`, PageController.getStylePage());
