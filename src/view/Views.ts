@@ -246,11 +246,18 @@ export class Views {
               <td class="comment-cell">
                 ${photo.komentarz}
               </td>
+              <td class="action-cell">
+                <form action="/gallery/delete" method="POST" onsubmit="return confirm('Czy na pewno chcesz usunąć to zdjęcie?');">
+                  <input type="hidden" name="id" value="${photo.id}" />
+                  <input type="hidden" name="category" value="${photo.galeria}" />
+                  <button type="submit" class="delete-btn">Usuń</button>
+                </form>
+              </td>
             </tr>
           `
           )
           .join('')
-      : `<tr><td colspan="2" style="text-align:center; padding: 20px;">Brak zdjęć w tej kategorii.</td></tr>`;
+      : `<tr><td colspan="3" style="text-align:center; padding: 20px;">Brak zdjęć w tej kategorii.</td></tr>`;
 
     // Generowanie paska stronicowania (Pagination Links)
     let paginationHtml = '';
@@ -329,6 +336,23 @@ export class Views {
         }
         .comment-cell {
           font-size: 1.1em;
+        }
+        .action-cell {
+          width: 90px;
+          text-align: center;
+        }
+        .delete-btn {
+          background-color: #e74c3c;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.2s;
+        }
+        .delete-btn:hover {
+          background-color: #c0392b;
         }
 
         /* Style dla stronicowania */
