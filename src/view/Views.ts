@@ -240,9 +240,6 @@ export class Views {
           .map(
             (photo) => `
             <tr>
-              // <td class="photo-cell">
-              //   <img src="/photos/${photo.galeria}/${photo.link}" alt="${photo.komentarz}" />
-              // </td>
               <td class="photo-cell">
                 <img src="${photo.link}" alt="${photo.komentarz}" />
               </td>
