@@ -2,8 +2,15 @@ import { Request, Response } from 'express';
 import 'multer';
 import fs from 'fs';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 import { PhotoModel } from '../model/Photo';
 import { Views } from '../view/Views'; // 1. Zaimportuj klasę Views
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const getGallery = async (req: Request, res: Response) => {
   try {
@@ -34,14 +41,25 @@ export const getAddPhotoForm = (req: Request, res: Response) => {
 };
 
 export const postAddPhoto = async (req: Request, res: Response) => {
-  const { galeria, komentarz } = req.body;
-  const filename = req.file?.filename;
+  try {
+    const { galeria, komentarz } = req.body;
 
-  if (filename) {
-    await PhotoModel.addPhoto(filename, galeria, komentarz);
+    if (req.file) {
+      const b64 = Buffer.from(req.file.buffer).toString('base64');
+      const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+      const uploadResult = await cloudinary.uploader.upload(dataURI, {
+        folder: `gallery/${galeria}`,
+      });
+
+      await PhotoModel.addPhoto(uploadResult.secure_url, galeria, komentarz);
+    }
+
+    res.redirect(`/gallery?category=${galeria}`);
+  } catch (error) {
+    console.error('Błąd w postAddPhoto:', error);
+    res.status(500).send('Błąd serwera podczas dodawania zdjęcia');
   }
-
-  res.redirect(`/gallery?category=${galeria}`);
 };
 
 export const postDeletePhoto = async (req: Request, res: Response) => {
@@ -53,10 +71,16 @@ export const postDeletePhoto = async (req: Request, res: Response) => {
       const photo = await PhotoModel.getById(id);
 
       if (photo) {
-        const filePath = path.join(process.cwd(), 'public', 'photos', photo.galeria, photo.link);
-
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
+        if (photo.link.startsWith('http')) {
+          const match = photo.link.match(/\/upload\/(?:v\d+\/)?(.+)\.[^.]+$/);
+          if (match && match[1]) {
+            await cloudinary.uploader.destroy(match[1]);
+          }
+        } else {
+          const filePath = path.join(process.cwd(), 'public', 'photos', photo.galeria, photo.link);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
         }
 
         await PhotoModel.deletePhoto(id);
